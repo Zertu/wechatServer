@@ -20,6 +20,23 @@ api.getToken_JsApi().then(obj => {
   data.jsapi_ticket = obj.jsapi_ticket
 })
 
+router.get('/', function(req, res, next) {
+
+    var token = config.wechat.token
+    var signature = req.query.signature
+    var nonce = req.query.nonce
+    var timestamp = req.query.timestamp
+    var echostr = req.query.echostr
+    var str = [token, timestamp, nonce].sort().join('')
+    var sha = sha1(str)
+
+    if (sha === signature) {
+        res.send(echostr + '');
+    } else {
+        res.send(wong);
+    }
+});
+
 // 处理用户发送来的消息, 包括文字和点击事件
 router.post('/', handleEvent.msg) 
 
