@@ -15,13 +15,13 @@ https://mp.weixin.qq.com/debug/cgi-bin/sandboxinfo?action=showinfo&t=sandbox/ind
 ```javascript
 router.get('/', function(req, res, next) {
 
-    var token = config.wechat.token
-    var signature = req.query.signature
-    var nonce = req.query.nonce
-    var timestamp = req.query.timestamp
-    var echostr = req.query.echostr
-    var str = [token, timestamp, nonce].sort().join('')
-    var sha = sha1(str)
+    const token = config.wechat.token
+    const signature = req.query.signature
+    const nonce = req.query.nonce
+    const timestamp = req.query.timestamp
+    const echostr = req.query.echostr
+    const str = [token, timestamp, nonce].sort().join('')
+    const sha = sha1(str)
 
     if (sha === signature) {
         res.send(echostr + '');
@@ -36,7 +36,7 @@ router.get('/', function(req, res, next) {
 ### 2.1 用测试账号的appid和appsecret获取access_token
 ```javascript
 // 获取access_token
-var url = 'https://api.weixin.qq.com/cgi-bin/token';
+const url = 'https://api.weixin.qq.com/cgi-bin/token';
 axios.get( url , {
     params:{
         grant_type:'client_credential',
@@ -45,7 +45,7 @@ axios.get( url , {
     }
 }).then((userinfo)=>{
     
-    var access_token = userinfo.data.access_token ;
+    const access_token = userinfo.data.access_token ;
 
      
  });
@@ -54,9 +54,9 @@ axios.get( url , {
 
 ### 2.2 根据access_token设置公众号测试号的自定义菜单
 ```javascript
-    var url = `https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${access_token}`
+    const url = `https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${access_token}`
 
-var menu =  {
+const menu =  {
 	"button":[
 	{	
 	 "type":"view",  //view表示跳转
@@ -113,11 +113,11 @@ axios.post( url ,menu,{
 - node解析xml格式
 ```javascript
 // 响应用户发送来的消息
-var xml2js=require('xml2js');
+const xml2js=require('xml2js');
 
 router.post('/',(req, res)=>{
-	var xml = ''
-	var json = null
+	const xml = ''
+	const json = null
 	req.on('data',(chunk)=>{
 		xml += chunk
 	})
@@ -125,7 +125,7 @@ router.post('/',(req, res)=>{
 		//将接受到的xml数据转化为json
 		xml2js.parseString(xml,  {explicitArray : false}, function(err, json) {  
 
-			var backTime = new Date().getTime();  //创建发送时间，整数
+			const backTime = new Date().getTime();  //创建发送时间，整数
   			
 			if( json.xml.MsgType == 'event' ){  //消息为事件类型
 
@@ -142,7 +142,7 @@ router.post('/',(req, res)=>{
 	})
 
 	function getXml( json , backTime , word ){
-		var backXML = `
+		const backXML = `
 				<xml>
 					<ToUserName><![CDATA[${json.xml.FromUserName}]]></ToUserName>
 					<FromUserName><![CDATA[${json.xml.ToUserName}]]></FromUserName>
@@ -161,10 +161,10 @@ router.post('/',(req, res)=>{
 - 让用户跳转到授权页
 - 授权完成之后会自动跳转到redirect_uri并且会把code作为参数带去
 ```javascript
- var APPID = '************'
- var rui = 'http://****.cn/response'
- var code = 'code'
- var SCOPE = 'snsapi_userinfo'  // 需要用户授权
+ const APPID = '************'
+ const rui = 'http://****.cn/response'
+ const code = 'code'
+ const SCOPE = 'snsapi_userinfo'  // 需要用户授权
  location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${APPID}&redirect_uri=${rui}&response_type=${code}&scope=${SCOPE}&state=STATE#wechat_redirect`
 ```
 - 用户授权之后跳转到redirect_uri 根据openID获取用户基本信息
@@ -271,18 +271,18 @@ router.get('/response', responseShop.shop)
 
 // 生成签名用于wx.config
 router.get('/getWxConfig', (req, res) => {
-  var noncestr = req.query.nonceStr //前端传过来的随机字符串
+  const noncestr = req.query.nonceStr //前端传过来的随机字符串
 
-  var timestamp = parseInt(new Date().getTime() / 1000) + '' //获取当前时间戳, 单位秒
+  const timestamp = parseInt(new Date().getTime() / 1000) + '' //获取当前时间戳, 单位秒
 
-  var url = req.query.url //获取前端页面的url, 不包括#及之后的内容
+  const url = req.query.url //获取前端页面的url, 不包括#及之后的内容
 
   //按照微信的官方说法要将用于生成签名的noncestr timestamp url jsapi_ticket 按照ASCII码由小到大排序, 以键值对的形式
   //拼接成字符串, "jsapi_ticket".charCodeAt()可查询
-  var str = `jsapi_ticket=${data.jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`
+  const str = `jsapi_ticket=${data.jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`
 
   // 使用哈希加密成签名
-  var signature = sha1(str)   //npm install sha1
+  const signature = sha1(str)   //npm install sha1
 
   // 返回给前端
   res.json({

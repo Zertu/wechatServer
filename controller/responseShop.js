@@ -1,6 +1,6 @@
-var http = require('../service/http')
-var config = require('../config/config.js').config
-var api = require('../service/api.js')
+const http = require('../service/http')
+const config = require('../config/config.js').config
+const api = require('../service/api.js')
 
 //用户点击按钮进入商城
 exports.shop = function(req, res) {

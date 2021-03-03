@@ -2,7 +2,7 @@
 
 
 exports.getXml = function getXml( json , backTime , word ){
-	var backXML = `
+	const backXML = `
 			<xml>
 				<ToUserName><![CDATA[${json.xml.FromUserName}]]></ToUserName>
 				<FromUserName><![CDATA[${json.xml.ToUserName}]]></FromUserName>

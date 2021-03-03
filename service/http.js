@@ -1,4 +1,4 @@
-var axios = require('axios')
+const axios = require('axios')
 
 exports.get = function(url, obj) {
   return new Promise(function(resolve, reject) {

@@ -1,13 +1,13 @@
-var express = require('express')
-var router = express.Router()
-var axios = require('axios')
-var api = require('../service/api')
-var config = require('../config/config.js').config
-var handleEvent = require('../controller/handleEvent.js')
-var responseShop = require('../controller/responseShop.js')
-var sha1 = require('sha1')
+const express = require('express')
+const router = express.Router()
+const axios = require('axios')
+const api = require('../service/api')
+const config = require('../config/config.js').config
+const handleEvent = require('../controller/handleEvent.js')
+const responseShop = require('../controller/responseShop.js')
+const sha1 = require('sha1')
 
-var data = {
+const data = {
   access_token_main: '', //通过网页授权access_token可以进行授权后接口调用
   jsapi_ticket: '', //jsapi_ticket是公众号用于调用微信JS接口的临时票据
   openId: '' //用户的唯一标识码
@@ -22,13 +22,13 @@ api.getToken_JsApi().then(obj => {
 
 router.get('/', function(req, res, next) {
 
-    var token = config.wechat.token
-    var signature = req.query.signature
-    var nonce = req.query.nonce
-    var timestamp = req.query.timestamp
-    var echostr = req.query.echostr
-    var str = [token, timestamp, nonce].sort().join('')
-    var sha = sha1(str)
+    const token = config.wechat.token
+    const signature = req.query.signature
+    const nonce = req.query.nonce
+    const timestamp = req.query.timestamp
+    const echostr = req.query.echostr
+    const str = [token, timestamp, nonce].sort().join('')
+    const sha = sha1(str)
 
     if (sha === signature) {
         res.send(echostr + '');
@@ -50,18 +50,18 @@ router.get('/response', responseShop.shop)
 
 // 生成签名用于wx.config
 router.get('/getWxConfig', (req, res) => {
-  var noncestr = req.query.nonceStr //前端传过来的随机字符串
+  const noncestr = req.query.nonceStr //前端传过来的随机字符串
 
-  var timestamp = parseInt(new Date().getTime() / 1000) + '' //获取当前时间戳, 单位秒
+  const timestamp = parseInt(new Date().getTime() / 1000) + '' //获取当前时间戳, 单位秒
 
-  var url = req.query.url //获取前端页面的url, 不包括#及之后的内容
+  const url = req.query.url //获取前端页面的url, 不包括#及之后的内容
 
   //按照微信的官方说法要将用于生成签名的noncestr timestamp url jsapi_ticket 按照ASCII码由小到大排序, 以键值对的形式
   //拼接成字符串, "jsapi_ticket".charCodeAt()可查询
-  var str = `jsapi_ticket=${data.jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`
+  const str = `jsapi_ticket=${data.jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`
 
   // 使用哈希加密成签名
-  var signature = sha1(str)
+  const signature = sha1(str)
 
   // 返回给前端
   res.json({
