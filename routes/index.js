@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const axios = require('axios')
 const api = require('../service/api')
 const config = require('../config/config.js').config
 const handleEvent = require('../controller/handleEvent.js')
@@ -10,35 +9,40 @@ const sha1 = require('sha1')
 const data = {
   access_token_main: '', //通过网页授权access_token可以进行授权后接口调用
   jsapi_ticket: '', //jsapi_ticket是公众号用于调用微信JS接口的临时票据
+  token_expire_time: 0,
   openId: '' //用户的唯一标识码
 }
 
 // 获取access_token和jsapi_ticket  
-api.getToken_JsApi().then(obj => {
-  data.access_token_main = obj.access_token
+function get_wx_data() {
+  if (new Date().getTime() - data.token_expire_time > 7200) {
+    api.getToken_JsApi().then(obj => {
+      data.access_token_main = obj.access_token
+      data.token_expire_time
+      data.jsapi_ticket = obj.jsapi_ticket
+    })
+  }
+}
 
-  data.jsapi_ticket = obj.jsapi_ticket
-})
+router.get('/', function (req, res, next) {
 
-router.get('/', function(req, res, next) {
+  const token = config.wechat.token
+  const signature = req.query.signature
+  const nonce = req.query.nonce
+  const timestamp = req.query.timestamp
+  const echostr = req.query.echostr
+  const str = [token, timestamp, nonce].sort().join('')
+  const sha = sha1(str)
 
-    const token = config.wechat.token
-    const signature = req.query.signature
-    const nonce = req.query.nonce
-    const timestamp = req.query.timestamp
-    const echostr = req.query.echostr
-    const str = [token, timestamp, nonce].sort().join('')
-    const sha = sha1(str)
-
-    if (sha === signature) {
-        res.send(echostr + '');
-    } else {
-        res.send(wong);
-    }
+  if (sha === signature) {
+    res.send(echostr + '');
+  } else {
+    res.send(wong);
+  }
 });
 
 // 处理用户发送来的消息, 包括文字和点击事件
-router.post('/', handleEvent.msg) 
+router.post('/', handleEvent.msg)
 
 // 响应shop路由
 router.get('/shop', (req, res) => {
@@ -73,6 +77,11 @@ router.get('/getWxConfig', (req, res) => {
     test: 123
   })
 })
+
+setInterval(() => {
+  get_wx_data()
+}, 7200);
+
 
 module.exports = router
 
